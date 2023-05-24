@@ -1,31 +1,40 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from './Button';
 
 
 export const Mainframe = () => {
-    const [currentValue, setCurrentValue] = useState(0);
-    const [input, setInput] = useState([]);
-
+    const [input, setInput] = useState([])
     const buttonValues = [
     [7, 8, 9, "x"],
     [4, 5, 6, "-"],
     [1, 2, 3, "+"],
     [0, ".", "="],]
 
-    const handleNumbers = (input) => {
-        console.log('input',input)
-        setInput(prevInput => prevInput.concat(input));
+    const handleNumbers = (value) => {
+        setInput((prevInput) => {
+            if (typeof prevInput[prevInput.length - 1] !== "number") {
+                return prevInput.concat(value);
+            }
+
+            const updatedInput = prevInput.slice(0, -1);
+
+            // if(!Number.isInteger(prevInput[prevInput.length-1])) {
+            //     updatedInput.push(prevInput[prevInput.length-1] + value);
+            // }
+
+            updatedInput.push(prevInput[prevInput.length - 1] * 10 + value);
+            return updatedInput;
+        });
+
     }
 
     const handleClear = () => {
         console.log('clear pressed\n')
-        console.log('input', input);
         setInput([]);
     }
 
     const handleEquals = () => {
         console.log("handle equals pressed")
-        //only place where value is set
         let result = 0;
         let index;
         while (input.includes('x') || input.includes('÷'))  {
@@ -33,32 +42,32 @@ export const Mainframe = () => {
                 index = input.indexOf('x');
                 result = Number(input[index-1]) * Number(input[index+1]);
                 input[index-1] = result;
-                input.splice(index, 1);
-                input.splice(index+1, 1);
+                console.log('input', input)
+                let rem1 = input.splice(index,2)
+                // let rem2 = input.splice(index+1,1)
+                console.log('rem1', rem1)
+                console.log('input[index-1]', input)
             } else if (input.includes('÷')) {
                 index = input.indexOf('÷');
                 result = Number(input[index-1]) / Number(input[index+1]);
                 input[index-1] = result;
-                input.splice(index, 1);
-                input.splice(index+1, 1);
+                input.splice(index, 2);
             }
         }
+
+        console.log('before +- input', input);
 
         while (input.includes('+') || input.includes('-')) {
             if(input.includes('+')) {
                 index = input.indexOf('+');
                 result = Number(input[index-1]) + Number(input[index+1]);
                 input[index-1] = result;
-                input.splice(index, 1);
-                input.splice(index+1, 1);
-                console.log('input',input)
+                input.splice(index, 2);
             } else if (input.includes('-')) {
                 index = input.indexOf('-');
                 result = Number(input[index-1]) - Number(input[index+1]);
                 input[index-1] = result;
-                input.splice(index, 1);
-                input.splice(index+1, 1);
-                console.log('input',input)
+                input.splice(index, 2);
             }
         }
 
@@ -66,19 +75,36 @@ export const Mainframe = () => {
             input.splice(i,1);
         }
 
-        setCurrentValue(prevValue => input[0]);
-        setInput(prevValue => input[0]);
-        
+        console.log('after +- input', input);
+
+        setInput(input[0]);
+
     }
 
     const handleDecimal = () => {
-        setInput(prevInput => prevInput.concat('.'));
+        console.log('handle decimal pressed')
+        if (typeof input[input.length-1] === 'number') {
+            setInput((prevInput) => {
+                const updatedInput = prevInput.slice(0,-1);
+                updatedInput.push(prevInput[prevInput.length-1] + '.')
+                return updatedInput
+            })
+        } else {
+            alert('Error, can only add decimal points to numbers');
+        }
+
+
     }
 
-    const handleOperations = (input) => {
+    const handleOperations = (value) => {
         console.log("handle operations pressed");
-        setInput(prevInput => prevInput.concat(input));
-       
+
+        if(typeof input[input.length-1] === 'string') {
+            alert('error, cannot input another operator. An operator must be followed by a number.')
+        } else {
+            setInput(prevInput => prevInput.concat(value));
+        }
+
     }
 
     const handleClick = (value) => {
@@ -107,10 +133,10 @@ export const Mainframe = () => {
 
     return(
         <section className="calculator-body">
-            <label htmlFor="input">Enter:</label>
+            <label htmlFor="input">Enter Calculation:</label>
             <input type="text" id="input" name="input" value={input.length > 0 ? input.join('') : input}></input>
           <div className='button-body'>
-            <button onClick={() => handleClick('clear')}>C</button>
+            <button onClick={() => handleClick('C')}>C</button>
                 {
                 buttonValues.flat().map((btn, i) => {
                     return (
