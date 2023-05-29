@@ -1,14 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from './Button';
 
 
 export const Mainframe = () => {
-    const [input, setInput] = useState([])
+    const [input, setInput] = useState(() => {
+        const retrieved = localStorage.getItem('input');
+
+        if (retrieved !== null) {
+          return retrieved.split(" ").map((value) => (isNaN(Number(value)) ? value : Number(value)));
+        }
+
+        return [];
+      });
+
+    const [preview, setPreview] = useState(0);
+
     const buttonValues = [
     [7, 8, 9, "x"],
     [4, 5, 6, "-"],
     [1, 2, 3, "+"],
     [0, ".", "="],]
+
+    useEffect(() => {
+        localStorage.setItem('input', input)
+    })
 
     const handleNumbers = (value) => {
         setInput((prevInput) => {
@@ -33,53 +48,57 @@ export const Mainframe = () => {
         setInput([]);
     }
 
-    const handleEquals = () => {
+    const handleCalculation = (inputArr) => {
         console.log("handle equals pressed")
         let result = 0;
         let index;
-        while (input.includes('x') || input.includes('÷'))  {
-            if (input.includes('x')) {
-                index = input.indexOf('x');
-                //should be number already, don't need to convert
-                result = Number(input[index-1]) * Number(input[index+1]);
-                input[index-1] = result;
-                console.log('input', input)
-                let rem1 = input.splice(index,2)
-                // let rem2 = input.splice(index+1,1)
+        let inputArrCopy = [...inputArr];
+        while (inputArrCopy.includes('x') || inputArrCopy.includes('÷'))  {
+            if (inputArrCopy.includes('x')) {
+                index = inputArrCopy.indexOf('x');
+                result = Number(inputArrCopy[index-1]) * Number(inputArrCopy[index+1]);
+                inputArrCopy[index-1] = result;
+                console.log('inputArrCopy', inputArrCopy)
+                let rem1 = inputArrCopy.splice(index,2)
                 console.log('rem1', rem1)
-                console.log('input[index-1]', input)
-            } else if (input.includes('÷')) {
-                index = input.indexOf('÷');
-                result = Number(input[index-1]) / Number(input[index+1]);
-                input[index-1] = result;
-                input.splice(index, 2);
+                console.log('inputArrCopy[index-1]', inputArrCopy)
+            } else if (inputArrCopy.includes('÷')) {
+                index = inputArrCopy.indexOf('÷');
+                result = Number(inputArrCopy[index-1]) / Number(inputArrCopy[index+1]);
+                inputArrCopy[index-1] = result;
+                inputArrCopy.splice(index, 2);
             }
         }
 
-        console.log('before +- input', input);
+        console.log('before +- inputArrCopy', inputArrCopy);
 
-        while (input.includes('+') || input.includes('-')) {
-            if(input.includes('+')) {
-                index = input.indexOf('+');
-                result = Number(input[index-1]) + Number(input[index+1]);
-                input[index-1] = result;
-                input.splice(index, 2);
-            } else if (input.includes('-')) {
-                index = input.indexOf('-');
-                result = Number(input[index-1]) - Number(input[index+1]);
-                input[index-1] = result;
-                input.splice(index, 2);
+        while (inputArrCopy.includes('+') || inputArrCopy.includes('-')) {
+            if(inputArrCopy.includes('+')) {
+                index = inputArrCopy.indexOf('+');
+                result = Number(inputArrCopy[index-1]) + Number(inputArrCopy[index+1]);
+                inputArrCopy[index-1] = result;
+                inputArrCopy.splice(index, 2);
+            } else if (inputArrCopy.includes('-')) {
+                index = inputArrCopy.indexOf('-');
+                result = Number(inputArrCopy[index-1]) - Number(inputArrCopy[index+1]);
+                inputArrCopy[index-1] = result;
+                inputArrCopy.splice(index, 2);
             }
         }
 
-        for (let i =1; i<input.length; i++) {
-            input.splice(i,1);
+        for (let i =1; i<inputArrCopy.length; i++) {
+            inputArrCopy.splice(i,1);
         }
 
-        console.log('after +- input', input);
+        console.log('after +- inputArrCopy', inputArrCopy);
 
-        setInput(input[0]);
+        return inputArrCopy[0];
 
+    }
+
+    const handleEquals = () => {
+        const result = handleCalculation(input);
+        setInput(result);
     }
 
     const handleDecimal = () => {
@@ -93,8 +112,6 @@ export const Mainframe = () => {
         } else {
             alert('Error, can only add decimal points to numbers');
         }
-
-
     }
 
     const handleOperations = (value) => {
@@ -105,13 +122,12 @@ export const Mainframe = () => {
         } else {
             setInput(prevInput => prevInput.concat(value));
         }
-
     }
 
     const handleClick = (value) => {
         switch (value) {
             case '=':
-                handleEquals();
+                handleEquals(input);
                 break;
             case 'C':
                 handleClear();
@@ -126,16 +142,31 @@ export const Mainframe = () => {
                 handleOperations(value);
                 break;
             default:
-                handleNumbers(value);
+                handleNumbers();
                 break;
         }
     }
+
+    useEffect(() => {
+        setPreview(handleCalculation(input))
+        const operators = ['=', 'C', '+', '-', 'x', '÷'];
+        let contains;
+
+        const containsOperator = (input, operators) => {
+            return input.some((element) => operators.includes(element));
+          };
+
+        if (containsOperator(input, operators)) {
+            setPreview(handleCalculation(input));
+        }
+    }, [input])
 
 
     return(
         <section className="calculator-body">
             <label htmlFor="input">Enter Calculation:</label>
-            <input type="text" id="input" name="input" value={input.length > 0 ? input.join('') : input}></input>
+            <input type="text" id="input" name="input" value={input.length > 0 ? input.join(" ") : input}></input>
+            <div>preview: {preview}</div>
           <div className='button-body'>
             <button onClick={() => handleClick('C')}>C</button>
                 {
