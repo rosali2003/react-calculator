@@ -22,20 +22,41 @@ export const Mainframe = () => {
     [0, ".", "="],]
 
     useEffect(() => {
-        localStorage.setItem('input', input)
+        localStorage.setItem('input', input.join(" "))
     })
 
     const handleNumbers = (value) => {
+        console.log("handle numbers pressed")
         setInput((prevInput) => {
+            console.log("previnput", prevInput)
+            if(typeof prevInput[prevInput.length - 1] === "string" && prevInput[prevInput.length - 1].includes(".")) {
+                console.log("entering handle numbers decimal")
+
+                const updatedInput = prevInput.slice(0, -1);
+                const newValue = Number(prevInput[prevInput.length - 1]) + value * 0.1;
+                updatedInput.push(newValue);
+                return updatedInput;
+            } else if (prevInput[prevInput.length-1] !== Math.floor(prevInput[prevInput.length-1])) {
+                console.log("entering prevInput flooring statement")
+                //convert last element of prevInput into string
+                //determine index of '.'
+                //determine length of string
+                //numDecimal = length of string - index of '.'
+                //0.1^numDecimal
+                // const decimalPlaces = () => {
+                //     const newValue = prevInput[prevInput.length-1].toString()
+                //     return (0.1)^(newValue.length - newValue.indexOf('.'))
+
+                // }
+                return prevInput[prevInput.length-1] * 0.1 + value;
+
+                console.log("prevInput[prevInput.length-1] * 0.1", prevInput[prevInput.length-1] * 0.1);
+            }
             if (typeof prevInput[prevInput.length - 1] !== "number") {
                 return prevInput.concat(value);
             }
 
             const updatedInput = prevInput.slice(0, -1);
-
-            // if(!Number.isInteger(prevInput[prevInput.length-1])) {
-            //     updatedInput.push(prevInput[prevInput.length-1] + value);
-            // }
 
             updatedInput.push(prevInput[prevInput.length - 1] * 10 + value);
             return updatedInput;
@@ -53,15 +74,24 @@ export const Mainframe = () => {
         let result = 0;
         let index;
         let inputArrCopy = [...inputArr];
+
+        // while (inputArrCopy.includes('.')) {
+        //     index = inputArrCopy.indexOf('.');
+        //     const numDigits = inputArrCopy.toString().length
+        //     for(let i = 0; i < numDigits;i++) {
+        //         inputArrCopy[index+1] = inputArrCopy[index+1]
+        //     }
+        //     result = inputArrCopy[index-1] + inputArrCopy[index+1];
+        //     inputArrCopy[index-1] = result;
+        //     inputArrCopy.splice(index,2)
+        // }
+
         while (inputArrCopy.includes('x') || inputArrCopy.includes('÷'))  {
             if (inputArrCopy.includes('x')) {
                 index = inputArrCopy.indexOf('x');
                 result = Number(inputArrCopy[index-1]) * Number(inputArrCopy[index+1]);
                 inputArrCopy[index-1] = result;
-                console.log('inputArrCopy', inputArrCopy)
-                let rem1 = inputArrCopy.splice(index,2)
-                console.log('rem1', rem1)
-                console.log('inputArrCopy[index-1]', inputArrCopy)
+                inputArrCopy.splice(index,2)
             } else if (inputArrCopy.includes('÷')) {
                 index = inputArrCopy.indexOf('÷');
                 result = Number(inputArrCopy[index-1]) / Number(inputArrCopy[index+1]);
@@ -69,8 +99,6 @@ export const Mainframe = () => {
                 inputArrCopy.splice(index, 2);
             }
         }
-
-        console.log('before +- inputArrCopy', inputArrCopy);
 
         while (inputArrCopy.includes('+') || inputArrCopy.includes('-')) {
             if(inputArrCopy.includes('+')) {
@@ -90,15 +118,13 @@ export const Mainframe = () => {
             inputArrCopy.splice(i,1);
         }
 
-        console.log('after +- inputArrCopy', inputArrCopy);
-
         return inputArrCopy[0];
 
     }
 
     const handleEquals = () => {
         const result = handleCalculation(input);
-        setInput(result);
+        setInput([result]);
     }
 
     const handleDecimal = () => {
@@ -112,6 +138,7 @@ export const Mainframe = () => {
         } else {
             alert('Error, can only add decimal points to numbers');
         }
+
     }
 
     const handleOperations = (value) => {
@@ -127,7 +154,7 @@ export const Mainframe = () => {
     const handleClick = (value) => {
         switch (value) {
             case '=':
-                handleEquals(input);
+                handleEquals();
                 break;
             case 'C':
                 handleClear();
@@ -142,24 +169,25 @@ export const Mainframe = () => {
                 handleOperations(value);
                 break;
             default:
-                handleNumbers();
+                handleNumbers(value);
                 break;
         }
     }
 
-    useEffect(() => {
-        setPreview(handleCalculation(input))
-        const operators = ['=', 'C', '+', '-', 'x', '÷'];
-        let contains;
+    // useEffect(() => {
+    //     console.log("entering preview use effect function");
 
-        const containsOperator = (input, operators) => {
-            return input.some((element) => operators.includes(element));
-          };
+    //     const operators = ['=', 'C', '+', '-', 'x', '÷'];
 
-        if (containsOperator(input, operators)) {
-            setPreview(handleCalculation(input));
-        }
-    }, [input])
+
+    //     const containsOperator = (input, operators) => {
+    //         return input.some((element) => operators.includes(element));
+    //       };
+
+    //     if (containsOperator(input, operators)) {
+    //         setPreview(handleCalculation(input));
+    //     }
+    // }, [input])
 
 
     return(
