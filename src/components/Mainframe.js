@@ -40,6 +40,7 @@ export const Mainframe = () => {
         while (input.includes('x') || input.includes('÷'))  {
             if (input.includes('x')) {
                 index = input.indexOf('x');
+                //should be number already, don't need to convert
                 result = Number(input[index-1]) * Number(input[index+1]);
                 input[index-1] = result;
                 console.log('input', input)
@@ -138,6 +139,7 @@ export const Mainframe = () => {
           <div className='button-body'>
             <button onClick={() => handleClick('C')}>C</button>
                 {
+                    //remove the flatten since no longer 2d array
                 buttonValues.flat().map((btn, i) => {
                     return (
                     <Button
