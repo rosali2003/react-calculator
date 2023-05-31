@@ -1,7 +1,7 @@
-export const Button = ({className, value, onClick}) => {
+
+export const EqualsButton = ({className, value, onClick}) => {
   return (
     <button className={className} onClick={onClick}>{value}</button>
   )
 }
-
 
