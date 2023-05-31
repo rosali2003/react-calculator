@@ -19,7 +19,7 @@ export const Mainframe = () => {
     [7, 8, 9, "x"],
     [4, 5, 6, "-"],
     [1, 2, 3, "+"],
-    [0, ".", "="],]
+    [0, ".", "="]]
 
     useEffect(() => {
         localStorage.setItem('input', input.join(" "))
@@ -51,13 +51,10 @@ export const Mainframe = () => {
         let index;
         let inputArrCopy = [...inputArr];
 
-        console.log("inputArrCopy", inputArrCopy)
         //convert numbers to decimals
         while (inputArrCopy.includes('.')) {
-            console.log("entering handle decimal operation in handleCalculation")
             index = inputArrCopy.indexOf('.');
             const numDecimals = 0.1 ** inputArrCopy[index+1].toString().length;
-            console.log("numDecimals", numDecimals)
             result = inputArrCopy[index-1] + inputArrCopy[index+1] * numDecimals;
             inputArrCopy[index-1] = result;
             inputArrCopy.splice(index,2)
@@ -148,20 +145,25 @@ export const Mainframe = () => {
         }
     }
 
-    // useEffect(() => {
-    //     console.log("entering preview use effect function");
+    useEffect(() => {
+        console.log("entering preview use effect function");
 
-    //     const operators = ['=', 'C', '+', '-', 'x', '÷'];
+        const operators = ['=', 'C', '+', '-', 'x', '÷'];
 
+        if(input.length === 0) {
+            console.log("entering input.length in preview useEffect")
+            setPreview(0)
+        }
 
-    //     const containsOperator = (input, operators) => {
-    //         return input.some((element) => operators.includes(element));
-    //       };
+        //identifies if any operators are present in input
+        const containsOperator = (input, operators) => {
+            return input.some((element) => operators.includes(element));
+          };
 
-    //     if (containsOperator(input, operators)) {
-    //         setPreview(handleCalculation(input));
-    //     }
-    // }, [input])
+        if (containsOperator(input, operators)) {
+            setPreview(handleCalculation(input));
+        }
+    }, [input])
 
 
     return(
@@ -171,6 +173,7 @@ export const Mainframe = () => {
             <div>preview: {preview}</div>
           <div className='button-body'>
             <button onClick={() => handleClick('C')}>C</button>
+            {/* <button onClick={() => handleClick('÷')}>÷</button> */}
                 {
                     //remove the flatten since no longer 2d array
                 buttonValues.flat().map((btn, i) => {
