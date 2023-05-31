@@ -27,40 +27,16 @@ export const Mainframe = () => {
 
     const handleNumbers = (value) => {
         console.log("handle numbers pressed")
-        setInput((prevInput) => {
-            console.log("previnput", prevInput)
-            if(typeof prevInput[prevInput.length - 1] === "string" && prevInput[prevInput.length - 1].includes(".")) {
-                console.log("entering handle numbers decimal")
+            setInput((prevInput) => {
+                if (typeof prevInput[prevInput.length - 1] !== "number") {
+                    return prevInput.concat(value);
+                }
 
                 const updatedInput = prevInput.slice(0, -1);
-                const newValue = Number(prevInput[prevInput.length - 1]) + value * 0.1;
-                updatedInput.push(newValue);
+
+                updatedInput.push(prevInput[prevInput.length - 1] * 10 + value);
                 return updatedInput;
-            } else if (prevInput[prevInput.length-1] !== Math.floor(prevInput[prevInput.length-1])) {
-                console.log("entering prevInput flooring statement")
-                //convert last element of prevInput into string
-                //determine index of '.'
-                //determine length of string
-                //numDecimal = length of string - index of '.'
-                //0.1^numDecimal
-                // const decimalPlaces = () => {
-                //     const newValue = prevInput[prevInput.length-1].toString()
-                //     return (0.1)^(newValue.length - newValue.indexOf('.'))
-
-                // }
-                return prevInput[prevInput.length-1] * 0.1 + value;
-
-                console.log("prevInput[prevInput.length-1] * 0.1", prevInput[prevInput.length-1] * 0.1);
-            }
-            if (typeof prevInput[prevInput.length - 1] !== "number") {
-                return prevInput.concat(value);
-            }
-
-            const updatedInput = prevInput.slice(0, -1);
-
-            updatedInput.push(prevInput[prevInput.length - 1] * 10 + value);
-            return updatedInput;
-        });
+            });
 
     }
 
@@ -75,16 +51,18 @@ export const Mainframe = () => {
         let index;
         let inputArrCopy = [...inputArr];
 
-        // while (inputArrCopy.includes('.')) {
-        //     index = inputArrCopy.indexOf('.');
-        //     const numDigits = inputArrCopy.toString().length
-        //     for(let i = 0; i < numDigits;i++) {
-        //         inputArrCopy[index+1] = inputArrCopy[index+1]
-        //     }
-        //     result = inputArrCopy[index-1] + inputArrCopy[index+1];
-        //     inputArrCopy[index-1] = result;
-        //     inputArrCopy.splice(index,2)
-        // }
+        console.log("inputArrCopy", inputArrCopy)
+        //convert numbers to decimals
+        while (inputArrCopy.includes('.')) {
+            console.log("entering handle decimal operation in handleCalculation")
+            index = inputArrCopy.indexOf('.');
+            const numDecimals = 0.1 ** inputArrCopy[index+1].toString().length;
+            console.log("numDecimals", numDecimals)
+            result = inputArrCopy[index-1] + inputArrCopy[index+1] * numDecimals;
+            inputArrCopy[index-1] = result;
+            inputArrCopy.splice(index,2)
+        }
+
 
         while (inputArrCopy.includes('x') || inputArrCopy.includes('÷'))  {
             if (inputArrCopy.includes('x')) {
@@ -130,11 +108,7 @@ export const Mainframe = () => {
     const handleDecimal = () => {
         console.log('handle decimal pressed')
         if (typeof input[input.length-1] === 'number') {
-            setInput((prevInput) => {
-                const updatedInput = prevInput.slice(0,-1);
-                updatedInput.push(prevInput[prevInput.length-1] + '.')
-                return updatedInput
-            })
+            setInput((prevInput) => prevInput.concat('.'))
         } else {
             alert('Error, can only add decimal points to numbers');
         }
