@@ -1,0 +1,6 @@
+.operator-button {
+  border-radius: 10px;
+  border: none;
+  background-color: rgb(218,220,224);
+  box-shadow: 5px 5px 6px 2px rgb(191, 195, 197);
+}
