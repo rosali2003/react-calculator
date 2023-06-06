@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { Button } from "./Button";
 import { DigitButton } from "./DigitButton";
 import { OperationButton } from "./OperationButton";
 import { EqualsButton } from "./EqualsButton";
 import { useCalculator } from "./useCalculator";
+import "./Mainframe.css";
 
 export const Mainframe = () => {
   const [preview, setPreview] = useState(0);
@@ -18,11 +18,11 @@ export const Mainframe = () => {
   } = useCalculator();
 
   const buttonValues = [
-    ["÷", "C"],
     [7, 8, 9, "x"],
     [4, 5, 6, "-"],
     [1, 2, 3, "+"],
-    [0, ".", "="],
+    [0, ".", "C"],
+    ["÷", "="],
   ];
 
   const operators = ["=", "C", "+", "-", "x", "÷", "."];
@@ -79,43 +79,44 @@ export const Mainframe = () => {
   }, [input]);
 
   return (
-    <section className="calculator-body">
-      <label htmlFor="input">Enter Calculation:</label>
-      <input
-        type="text"
-        id="input"
-        name="input"
-        value={input.length > 0 ? input.join(" ") : input}
-      ></input>
-      <div>preview: {preview}</div>
-      <div className="button-body">
-        <button onClick={() => handleClick("C")}>C</button>
-        <button onClick={() => handleClick("÷")}>÷</button>
-        {buttonValues.flat().map((btn, i) => {
-          if (operators.includes(btn)) {
-            return (
-              <OperationButton
-                key={btn}
-                value={btn}
-                onClick={() => handleClick(btn)}
-              />
-            );
-          } else if (btn === "=") {
-            return <EqualsButton key={btn} onClick={() => handleClick(btn)} />;
-          } else if (btn === "C") {
-            <Button key={btn} value={btn} onClick={() => handleClick(btn)}>
-              C
-            </Button>;
-          } else if (!isNaN(Number(btn)))
-            return (
-              <DigitButton
-                key={btn}
-                value={btn}
-                onClick={() => handleClick(btn)}
-              />
-            );
-        })}
-      </div>
-    </section>
+      <section className="calculator-body">
+        <label className="full-width-span" htmlFor="input">Enter Calculation:</label>
+        <input
+          className="full-width-span"
+          type="text"
+          id="input"
+          name="input"
+          value={input.length > 0 ? input.join(" ") : input}
+        ></input>
+        <div className="full-width-span">Preview: {preview}</div>
+        {/* <div className="button-body"> */}
+          {buttonValues.flat().map((btn, i) => {
+            if (btn === "=") {
+              return (
+                <EqualsButton
+                  className={"equals-button button"}
+                  value={btn}
+                  onClick={() => handleClick(btn)}
+                />
+              );
+            } else if (operators.includes(btn) && btn !== '=') {
+              return (
+                <OperationButton
+                  className={"operator-button button"}
+                  value={btn}
+                  onClick={() => handleClick(btn)}
+                />
+              );
+            } else if (!isNaN(Number(btn)))
+              return (
+                <DigitButton
+                  className={"digit-button button"}
+                  value={btn}
+                  onClick={() => handleClick(btn)}
+                />
+              );
+          })}
+        {/* </div> */}
+      </section>
   );
 };

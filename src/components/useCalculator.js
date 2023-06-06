@@ -16,22 +16,32 @@ export const useCalculator = () => {
   const handleOperations = (operation) => {
     console.log("handle operations pressed");
 
-    if (typeof input[input.length - 1] === "string") {
-      alert(
-        "error, cannot input another operator. An operator must be followed by a number."
-      );
-    } else {
-      setInput((prevInput) => prevInput.concat(operation));
-    }
+    // if (typeof input[input.length - 1] === "string") {
+    //   alert(
+    //     "error, cannot input another operator. An operator must be followed by a number."
+    //   );
+    // } else {
+    //   setInput((prevInput) => prevInput.concat(operation));
+    // }
+
+    setInput((prevInput) => {
+      if (typeof prevInput[prevInput.length -1] === "string") {
+        alert( "error, cannot input another operator. An operator must be followed by a number.");
+      } else {
+        return prevInput.concat(operation);
+      }
+    });
   };
 
   const handleNumbers = (value) => {
     console.log("handle numbers pressed");
     setInput((prevInput) => {
+      console.log("prevInput", prevInput)
       if (typeof prevInput[prevInput.length - 1] !== "number") {
         return prevInput.concat(value);
       }
 
+      console.log("input in handleNumbers", input)
       const updatedInput = prevInput.slice(0, -1);
 
       updatedInput.push(prevInput[prevInput.length - 1] * 10 + value);
@@ -42,7 +52,7 @@ export const useCalculator = () => {
 
   const handleClear = () => {
     console.log("clear pressed\n");
-    setInput([]);
+    setInput(prevInput => prevInput = []);
   };
 
   const handleCalculation = (inputArr) => {
@@ -106,17 +116,29 @@ export const useCalculator = () => {
   };
 
   const handleEquals = () => {
-    const result = handleCalculation(input);
-    setInput([result]);
+    setInput((prevInput) => {
+      const result = handleCalculation(prevInput);
+      // console.log([result]);
+      // console.log("prevInput", prevInput);
+      return [result]
+    });
   };
 
   const handleDecimal = () => {
     console.log("handle decimal pressed");
-    if (typeof input[input.length - 1] === "number") {
-      setInput((prevInput) => prevInput.concat("."));
-    } else {
-      alert("Error, can only add decimal points to numbers");
-    }
+    // if (typeof input[input.length - 1] === "number") {
+    //   setInput((prevInput) => prevInput.concat("."));
+    // } else {
+    //   alert("Error, can only add decimal points to numbers");
+    // }
+
+    setInput((prevInput) => {
+      if(typeof prevInput[prevInput.length-1] === 'number') {
+        return prevInput.concat(".");
+      } else {
+        alert("Error, can only add decimal points to numbers");
+      }
+    });
   };
 
 

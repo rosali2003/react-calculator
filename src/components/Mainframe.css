@@ -1,0 +1,17 @@
+.calculator-body {
+  display: grid;
+  text-align: center;
+  grid-template-columns: repeat(4, 3fr);
+  grid-template-rows: repeat(8, 3fr);
+  grid-gap: 10px;
+  padding: 10px;
+  border-style: solid;
+  border-color: black;
+  border-radius: 15px;
+  width: 400px;
+  height: 600px;
+}
+
+.full-width-span {
+  grid-column: span 4;
+}
