@@ -31,7 +31,7 @@ export const Mainframe = () => {
     localStorage.setItem("input", input.join(" "));
   });
 
-  const handleClick = (value) => {
+  const handleClick = (value:string|number) => {
     switch (value) {
       case "=":
         handleEquals();
@@ -49,7 +49,7 @@ export const Mainframe = () => {
         handleOperations(value);
         break;
       default:
-        handleNumbers(value);
+        handleNumbers(Number(value));
         break;
     }
   };
@@ -61,20 +61,13 @@ export const Mainframe = () => {
       setPreview(0);
     }
 
-    // console.log("preview", preview)
-    // console.log("isNaN(preview)", isNaN(preview))
-    // if(isNaN(preview)) {
-    //     console.log("entering preview is NaN function in useEffect")
-    //     setPreview(input[input.length-2])
-    // }
-
     //identifies if any operators are present in input
-    const containsOperator = (input, operators) => {
-      return input.some((element) => operators.includes(element));
+    const containsOperator = (input:any, operators:string[]) => {
+      return input.some((element:string) => operators.includes(element));
     };
 
     if (containsOperator(input, operators)) {
-      setPreview(handleCalculation(input));
+      setPreview(handleCalculation(input) as number);
     }
   }, [input]);
 
@@ -86,37 +79,32 @@ export const Mainframe = () => {
           type="text"
           id="input"
           name="input"
-          value={input.length > 0 ? input.join(" ") : input}
+          value={input.length > 0 ? input.map((item) => String(item)).join(" ") : ""}
         ></input>
         <div className="full-width-span">Preview: {preview}</div>
-        {/* <div className="button-body"> */}
           {buttonValues.flat().map((btn, i) => {
             if (btn === "=") {
               return (
                 <EqualsButton
-                  className={"equals-button button"}
                   value={btn}
                   onClick={() => handleClick(btn)}
                 />
               );
-            } else if (operators.includes(btn) && btn !== '=') {
+            } else if (operators.includes(btn.toString()) && btn !== '=') {
               return (
                 <OperationButton
-                  className={"operator-button button"}
-                  value={btn}
+                  value={btn.toString()}
                   onClick={() => handleClick(btn)}
                 />
               );
             } else if (!isNaN(Number(btn)))
               return (
                 <DigitButton
-                  className={"digit-button button"}
-                  value={btn}
+                  value={Number(btn)}
                   onClick={() => handleClick(btn)}
                 />
               );
           })}
-        {/* </div> */}
       </section>
   );
 };

@@ -13,27 +13,20 @@ export const useCalculator = () => {
     return [];
   });
 
-  const handleOperations = (operation) => {
+  const handleOperations = (operation: string) => {
     console.log("handle operations pressed");
-
-    // if (typeof input[input.length - 1] === "string") {
-    //   alert(
-    //     "error, cannot input another operator. An operator must be followed by a number."
-    //   );
-    // } else {
-    //   setInput((prevInput) => prevInput.concat(operation));
-    // }
 
     setInput((prevInput) => {
       if (typeof prevInput[prevInput.length -1] === "string") {
         alert( "error, cannot input another operator. An operator must be followed by a number.");
+        return prevInput;
       } else {
         return prevInput.concat(operation);
       }
     });
   };
 
-  const handleNumbers = (value) => {
+  const handleNumbers = (value:number) => {
     console.log("handle numbers pressed");
     setInput((prevInput) => {
       console.log("prevInput", prevInput)
@@ -44,7 +37,7 @@ export const useCalculator = () => {
       console.log("input in handleNumbers", input)
       const updatedInput = prevInput.slice(0, -1);
 
-      updatedInput.push(prevInput[prevInput.length - 1] * 10 + value);
+      updatedInput.push(prevInput[prevInput.length - 1] as number * 10 + value);
       return updatedInput;
     });
   };
@@ -55,7 +48,7 @@ export const useCalculator = () => {
     setInput(prevInput => prevInput = []);
   };
 
-  const handleCalculation = (inputArr) => {
+  const handleCalculation = (inputArr:(string|number)[]) => {
     console.log("handle equals pressed");
     let result = 0;
     let index;
@@ -70,7 +63,7 @@ export const useCalculator = () => {
         return
       }
       const numDecimals = 0.1 ** inputArrCopy[index + 1].toString().length;
-      result = inputArrCopy[index - 1] + inputArrCopy[index + 1] * numDecimals;
+      result = (inputArrCopy[index - 1] as number) + (inputArrCopy[index + 1] as number) * numDecimals;
       //if nothing after '.', it will crash, handle this case
       inputArrCopy[index - 1] = result;
       inputArrCopy.splice(index, 2);
@@ -118,35 +111,24 @@ export const useCalculator = () => {
   const handleEquals = () => {
     setInput((prevInput) => {
       const result = handleCalculation(prevInput);
-      // console.log([result]);
-      // console.log("prevInput", prevInput);
-      return [result]
+      return [result as number]
     });
   };
 
   const handleDecimal = () => {
     console.log("handle decimal pressed");
-    // if (typeof input[input.length - 1] === "number") {
-    //   setInput((prevInput) => prevInput.concat("."));
-    // } else {
-    //   alert("Error, can only add decimal points to numbers");
-    // }
 
     setInput((prevInput) => {
       if(typeof prevInput[prevInput.length-1] === 'number') {
         return prevInput.concat(".");
       } else {
         alert("Error, can only add decimal points to numbers");
+        return prevInput
       }
     });
   };
 
 
-
   return { handleOperations, handleClear, handleCalculation, handleDecimal, handleEquals, handleNumbers, input};
 };
 
-// const Calculator = () => {
-//   const { handleDecimal, addDigit, handleOperations, clear, calculate, output } =
-//     useCalculator();
-// };
